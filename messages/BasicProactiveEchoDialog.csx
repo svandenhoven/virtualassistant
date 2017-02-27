@@ -25,29 +25,60 @@ public class BasicProactiveEchoDialog : IDialog<object>
     public virtual async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> argument)
     {
         var message = await argument;
-        if (message.Text == "reset")
+        switch(messge.Text)
         {
-            PromptDialog.Confirm(
-                context,
-                AfterResetAsync,
-                "Are you sure you want to reset the count?",
-                "Didn't get that!",
-                promptStyle: PromptStyle.Auto);
-        }
-        else
-        {
-            // Create a queue Message
-            var queueMessage = new Message
+            case "reset":
             {
-                ResumptionCookie = new ResumptionCookie(message),
-                Text = message.Text
-            };
+                PromptDialog.Confirm(
+                    context,
+                    AfterResetAsync,
+                    "Are you sure you want to reset the count?",
+                    "Didn't get that!",
+                    promptStyle: PromptStyle.Auto);
+                break;
+            }
+            case "ProceedOrder":
+            {
+                // Create a queue Message
+                var queueMessage = new Message
+                {
+                    ResumptionCookie = new ResumptionCookie(message),
+                    Text = message.Text
+                };
 
-            // write the queue Message to the queue
-            await AddMessageToQueueAsync(JsonConvert.SerializeObject(queueMessage));
+                await context.PostAsync($"Your order will proceed.");
+                context.Wait(MessageReceivedAsync);
+                break;
+            }
+            case "CancelOrder":
+            {
+                // Create a queue Message
+                var queueMessage = new Message
+                {
+                    ResumptionCookie = new ResumptionCookie(message),
+                    Text = message.Text
+                };
 
-            await context.PostAsync($"{this.count++}: You said {queueMessage.Text}. Message added to the queue.");
-            context.Wait(MessageReceivedAsync);
+                await context.PostAsync($"Your order will be canceled.");
+                context.Wait(MessageReceivedAsync);
+                break;
+            }
+            default:
+            {
+                // Create a queue Message
+                var queueMessage = new Message
+                {
+                    ResumptionCookie = new ResumptionCookie(message),
+                    Text = message.Text
+                };
+
+                // write the queue Message to the queue
+                await AddMessageToQueueAsync(JsonConvert.SerializeObject(queueMessage));
+
+                await context.PostAsync($"{this.count++}: You said {queueMessage.Text}. Message added to the queue.");
+                context.Wait(MessageReceivedAsync);
+                break;
+            }
         }
     }
 
