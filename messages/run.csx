@@ -63,44 +63,46 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log)
                     var message = JsonConvert.DeserializeObject<Message>(((JObject) trigger.Value).GetValue("Message").ToString());
                     var messageactivity = (Activity)message.ResumptionCookie.GetMessage();
                     
-                    dynamic msgObj = JsonConvert.DeserializeObject(message.Text);
-
-                    if (msgObj.GetType().GetProperty("Type") != null)
+                    if(message.Text.Contains("{"))
                     {
-                        client = new ConnectorClient(new Uri(messageactivity.ServiceUrl));
-                        var triggerReply = messageactivity.CreateReply();
+                        dynamic msgObj = JsonConvert.DeserializeObject(message.Text);
+                        if (msgObj.GetType().GetProperty("Type") != null)
+                        {
+                            client = new ConnectorClient(new Uri(messageactivity.ServiceUrl));
+                            var triggerReply = messageactivity.CreateReply();
 
-                        List<CardAction> cardButtons = new List<CardAction>();
-                        CardAction plButton = new CardAction()
-                        {
-                            Type = "imBack",
-                            Title = "Proceed Order",
-                            Value = "ProceedOrder "
-                        };
-                        cardButtons.Add(plButton);
-                        
-                        plButton = new CardAction()
-                        {
-                            Type = "imBack",
-                            Title = "Cancel Order",
-                            Value = "CancelOrder"
-                        };
-                        cardButtons.Add(plButton);
-                        
-                        var card = new ThumbnailCard()
-                        {
-                            Title = msgObj.Text,
-                            Subtitle = "Choose action:",
-                            Images = null,
-                            Buttons = cardButtons
-                        };
-                        card.Buttons = cardButtons;
-                        
-                        Microsoft.Bot.Connector.Attachment plAttachment = card.ToAttachment();
-                        triggerReply.Attachments = new List<Microsoft.Bot.Connector.Attachment>() { plAttachment };
-                        
-                        
-                        await client.Conversations.ReplyToActivityAsync(triggerReply);
+                            List<CardAction> cardButtons = new List<CardAction>();
+                            CardAction plButton = new CardAction()
+                            {
+                                Type = "imBack",
+                                Title = "Proceed Order",
+                                Value = "ProceedOrder "
+                            };
+                            cardButtons.Add(plButton);
+                            
+                            plButton = new CardAction()
+                            {
+                                Type = "imBack",
+                                Title = "Cancel Order",
+                                Value = "CancelOrder"
+                            };
+                            cardButtons.Add(plButton);
+                            
+                            var card = new ThumbnailCard()
+                            {
+                                Title = msgObj.Text,
+                                Subtitle = "Choose action:",
+                                Images = null,
+                                Buttons = cardButtons
+                            };
+                            card.Buttons = cardButtons;
+                            
+                            Microsoft.Bot.Connector.Attachment plAttachment = card.ToAttachment();
+                            triggerReply.Attachments = new List<Microsoft.Bot.Connector.Attachment>() { plAttachment };
+                            
+                            
+                            await client.Conversations.ReplyToActivityAsync(triggerReply);
+                        }
                     }
                     else
                     {
