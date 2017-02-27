@@ -70,16 +70,16 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log)
                     CardAction plButton = new CardAction()
                     {
                         Type = "imBack",
-                        Title = "Yes",
-                        Value = "Yes"
+                        Title = "Proceed Order",
+                        Value = "ProceedOrder "
                     };
                     cardButtons.Add(plButton);
                     
                     plButton = new CardAction()
                     {
                         Type = "imBack",
-                        Title = "No",
-                        Value = "No"
+                        Title = "Cancel Order",
+                        Value = "CancelOrder"
                     };
                     cardButtons.Add(plButton);
                     
