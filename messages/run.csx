@@ -102,6 +102,13 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log)
                         
                         await client.Conversations.ReplyToActivityAsync(triggerReply);
                     }
+                    else
+                    {
+                        client = new ConnectorClient(new Uri(messageactivity.ServiceUrl));
+                        var triggerReply = messageactivity.CreateReply();
+                        triggerReply.Text = message.Text;
+                        await client.Conversations.ReplyToActivityAsync(triggerReply);
+                    }
                     log.Info("Trigger end");
                     break;
                 case ActivityTypes.ContactRelationUpdate:
