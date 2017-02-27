@@ -63,6 +63,8 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log)
                     var message = JsonConvert.DeserializeObject<Message>(((JObject) trigger.Value).GetValue("Message").ToString());
                     var messageactivity = (Activity)message.ResumptionCookie.GetMessage();
                     
+                    dynamic msgObj = JsonConvert.DeserializeObject(message.Text);
+
                     client = new ConnectorClient(new Uri(messageactivity.ServiceUrl));
                     var triggerReply = messageactivity.CreateReply();
 
@@ -85,7 +87,7 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log)
                     
                     var card = new ThumbnailCard()
                     {
-                        Title = message.Text,
+                        Title = msgObj.Text,
                         Subtitle = "Choose action:",
                         Images = null,
                         Buttons = cardButtons
