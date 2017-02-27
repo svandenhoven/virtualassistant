@@ -65,7 +65,7 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log)
                     
                     dynamic msgObj = JsonConvert.DeserializeObject(message.Text);
 
-                    if(msgObj.Type = "Order")
+                    if (msgObj.HasProperty("Order"))
                     {
                         client = new ConnectorClient(new Uri(messageactivity.ServiceUrl));
                         var triggerReply = messageactivity.CreateReply();
