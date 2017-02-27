@@ -25,7 +25,7 @@ public class BasicProactiveEchoDialog : IDialog<object>
     public virtual async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> argument)
     {
         var message = await argument;
-        switch(messge.Text)
+        switch(message.Text)
         {
             case "reset":
             {
